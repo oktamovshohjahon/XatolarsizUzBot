@@ -344,7 +344,7 @@ const countCommand = async (ctx) => {
 
 const adminCommand = async (ctx) => {
   const chatId = ctx.from.id;
-  if (chatId == 2095960669) {
+  if (chatId == 2095960669 || chatId == 6092892179) {
     const users = await User.find();
     const userIds = [];
     users.forEach((user) => {
