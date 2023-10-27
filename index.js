@@ -313,9 +313,7 @@ bot.command("start", (ctx) => {
 });
 
 const translateCommand = (ctx) => {
-  // bot.command("translate", (ctx) => {
   ctx.reply(`⚠ Кечирасиз,  таржима қилиш хизмати вақтинча тўхтатилган`);
-  // });
 };
 
 const lotinkirillCommand = (ctx) => {
