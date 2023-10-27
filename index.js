@@ -599,14 +599,14 @@ bot.command("count", async (ctx) => {
   return ctx.reply(`Фойдаланувчилар сони: ${uniqueArray.length}`);
 });
 
-bot.telegram
-  .setMyCommands(botCommands)
-  .then(() => {
-    console.log("Bot commands set successfully.");
-  })
-  .catch((error) => {
-    console.error("Error setting bot commands:", error);
-  });
+// bot.telegram
+//   .setMyCommands(botCommands)
+//   .then(() => {
+//     console.log("Bot commands set successfully.");
+//   })
+//   .catch((error) => {
+//     console.error("Error setting bot commands:", error);
+//   });
 
 bot.on("text", async (ctx) => {
   const msg = ctx.message.text;
