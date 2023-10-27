@@ -585,8 +585,8 @@ bot.command("start", async (ctx) => {
     `);
 });
 
-bot.command("translate", (ctx) => {
-  ctx.reply(`⚠ Кечирасиз,  таржима қилиш хизмати вақтинча тўхтатилган`);
+bot.command("translate", async (ctx) => {
+  return ctx.reply(`⚠ Кечирасиз,  таржима қилиш хизмати вақтинча тўхтатилган`);
 });
 
 bot.command("count", async (ctx) => {
