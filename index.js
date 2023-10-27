@@ -8,7 +8,7 @@ app.listen(3000, function () {
   console.log("Example app listening on port: 3000");
 });
 
-const token = process.env.TOKEN;
+const token = "6899547636:AAG6HH5Hq7p8sHMcMBopB3Ok84I6wAqgxUA";
 function ozbekToCyrillic(text) {
   const ozbekToCyrillicMap = {
     a: "а",
