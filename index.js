@@ -5,7 +5,7 @@ const express = require("express");
 const app = express();
 
 app.listen(3000, function () {
-  console.log("App listening on port: 3000");
+  console.log("http://localhost:3000");
 });
 
 const token = "6785338288:AAGl6zAXE_f68skDRenvMZk1jKxKwgZM5oU";
