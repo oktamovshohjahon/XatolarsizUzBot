@@ -1,14 +1,8 @@
-﻿const mongoose = require("mongoose");
+﻿const { Telegraf, Scenes, session, Markup } = require("telegraf");
+const mongoose = require("mongoose");
 require("dotenv").config();
-const express = require("express");
 
-const app = express();
-
-app.listen(3000, function () {
-  console.log("http://localhost:3000");
-});
-
-const token = "6785338288:AAGl6zAXE_f68skDRenvMZk1jKxKwgZM5oU";
+const token = process.env.TOKEN;
 function ozbekToCyrillic(text) {
   const ozbekToCyrillicMap = {
     a: "а",
@@ -97,6 +91,12 @@ function ozbekToCyrillic(text) {
     "G’": "Ғ",
     "g’": "ғ",
     а: "a",
+    Ў: "O'",
+    ў: "o'",
+    // ў: "o`",
+    // Ў: "O`",
+    // ў: "o’",
+    // Ў: "O’",
     б: "b",
     д: "d",
     е: "e",
@@ -188,80 +188,11 @@ function ozbekToCyrillic(text) {
   return result;
 }
 
-function middlewareFunction(msg, next) {
-  bot.on("text", async (ctx) => {
-    const ozbekText = ctx.message.text;
-    const cyrillicText = ozbekToCyrillic(ozbekText);
-    if (
-      ozbekText != "/translate" &&
-      ozbekText != "/lotinkirill" &&
-      ozbekText != "/start" &&
-      ozbekText != "/xato" &&
-      ozbekText != "/count" &&
-      ozbekText != "/admin" &&
-      lotinKirillCliked == 1 &&
-      countKirillCliked != 1 &&
-      translateKirillCliked != 1 &&
-      xatoKirillCliked != 1
-    ) {
-      ctx.reply(cyrillicText);
-    }
-  });
-  next();
-}
-
-const middlewareFunction2 = async (msg, next) => {
-  bot.on("message", async (msg) => {
-    const users = await User.find();
-    const userIds = [];
-    users.forEach((user) => {
-      userIds.push(user.chatId);
-    });
-    const uniqueArray = Array.from(new Set(userIds));
-    uniqueArray.forEach((id) => {
-      if (
-        msg.text != "/translate" &&
-        msg.text != "/lotinkirill" &&
-        msg.text != "/start" &&
-        msg.text != "/xato" &&
-        msg.text != "/count" &&
-        msg.text != "/admin"
-      ) {
-        const messagePhoto = msg.photo ? msg.photo[0].file_id : null; // Xabarga oid rasm
-        const videoId = msg.video ? msg.video.file_id : null; // Videoning file_id si
-        const messageCaption = msg.caption; // Xabarga oid sarlavha
-        const buttonOptions = msg.reply_markup
-          ? msg.reply_markup.inline_keyboard
-          : null;
-
-        if (messagePhoto) {
-          bot.sendPhoto(id, messagePhoto, {
-            caption: messageCaption,
-            reply_markup: { inline_keyboard: buttonOptions },
-          });
-        } else if (videoId) {
-          bot.sendVideo(id, videoId, {
-            caption: messageCaption,
-            reply_markup: { inline_keyboard: buttonOptions },
-          });
-        } else if (messageText) {
-          bot.sendMessage(messageText);
-        }
-      }
-    });
-  });
-  next();
-};
-
-const { Telegraf, Scenes, session, Markup } = require("telegraf");
-
 const bot = new Telegraf(token);
 
 const connect = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://oktamovshohjahon596:xeLDY5SBSVDTIPsT@cluster0.a7h8pkd.mongodb.net/?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected");
   } catch (error) {
     console.error(error);
@@ -269,30 +200,6 @@ const connect = async () => {
 };
 
 connect();
-
-const botCommands = [
-  {
-    command: "/start",
-    description: "Ishga tushirish",
-  },
-  {
-    command: "/lotinkirill",
-    description: "Bexato o'girish",
-  },
-  {
-    command: "/translate",
-    description: "Tarjima qilish",
-  },
-  {
-    command: "/xato",
-    description: "Xatolik jo'natish",
-  },
-  {
-    command: "/count",
-    description: "Foydalanuvchilar soni",
-  },
-  // Add more commands as needed
-];
 
 const startCommand = async (ctx) => {
   console.log(1);
@@ -369,48 +276,88 @@ const adminCommand = async (ctx) => {
         const messageText = ctx.message.text;
 
         if (messagePhoto && messageCaption && !buttonOptions) {
-          console.log(1);
-          ctx.telegram.sendPhoto(id, messagePhoto, { caption: messageCaption });
+          try {
+            ctx.telegram.sendPhoto(id, messagePhoto, {
+              caption: messageCaption,
+            });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
         } else if (messagePhoto && buttonOptions && !messageCaption) {
-          ctx.telegram.sendPhoto(id, messagePhoto, {
-            reply_markup: buttonOptions,
-          });
+          try {
+            ctx.telegram.sendPhoto(id, messagePhoto, {
+              reply_markup: buttonOptions,
+            });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
         } else if (messagePhoto && buttonOptions && messageCaption) {
-          console.log(3);
-          ctx.telegram.sendPhoto(id, messagePhoto, {
-            reply_markup: buttonOptions,
-            caption: messageCaption,
-          });
+          try {
+            ctx.telegram.sendPhoto(id, messagePhoto, {
+              reply_markup: buttonOptions,
+              caption: messageCaption,
+            });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         } else if (messageText && buttonOptions) {
-          ctx.telegram.sendMessage(id, messageText, {
-            reply_markup: buttonOptions,
-          });
+          try {
+            ctx.telegram.sendMessage(id, messageText, {
+              reply_markup: buttonOptions,
+            });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         }
         if (videoId && messageCaption && !buttonOptions) {
-          ctx.telegram.sendVideo(id, videoId, { caption: messageCaption });
+          try {
+            ctx.telegram.sendVideo(id, videoId, { caption: messageCaption });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         } else if (videoId && buttonOptions && !messageCaption) {
-          console.log(1);
-          ctx.telegram.sendVideo(id, messagePhoto, {
-            reply_markup: buttonOptions,
-          });
+          try {
+            ctx.telegram.sendVideo(id, messagePhoto, {
+              reply_markup: buttonOptions,
+            });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         } else if (videoId && buttonOptions && messageCaption) {
-          ctx.telegram.sendVideo(id, videoId, {
-            reply_markup: buttonOptions,
-            caption: messageCaption,
-          });
+          try {
+            ctx.telegram.sendVideo(id, videoId, {
+              reply_markup: buttonOptions,
+              caption: messageCaption,
+            });
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         } else if (messagePhoto && !buttonOptions && !messageCaption) {
-          ctx.telegram.sendPhoto(id, messagePhoto);
+          try {
+            ctx.telegram.sendPhoto(id, messagePhoto);
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         } else if (videoId && !buttonOptions && !messageCaption) {
-          ctx.telegram.sendVideo(id, videoId);
+          try {
+            ctx.telegram.sendVideo(id, videoId);
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         } else if (messageText) {
-          ctx.telegram.sendMessage(id, messageText);
+          console.log(1);
+          try {
+            ctx.telegram.sendMessage(id, messageText);
+          } catch (error) {
+            console.error("Xato yuz berdi: ", error);
+          }
           return 0;
         }
       }
@@ -596,15 +543,6 @@ bot.command("count", async (ctx) => {
   const uniqueArray = Array.from(new Set(userIds));
   return ctx.reply(`Фойдаланувчилар сони: ${uniqueArray.length}`);
 });
-
-// bot.telegram
-//   .setMyCommands(botCommands)
-//   .then(() => {
-//     console.log("Bot commands set successfully.");
-//   })
-//   .catch((error) => {
-//     console.error("Error setting bot commands:", error);
-//   });
 
 bot.on("text", async (ctx) => {
   const msg = ctx.message.text;
